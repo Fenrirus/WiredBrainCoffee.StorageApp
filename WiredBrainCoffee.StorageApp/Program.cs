@@ -5,30 +5,48 @@ using WiredBrainCoffee.StorageApp.Repositories;
 
 namespace WiredBrainCoffee.StorageApp
 {
-    internal class Program
+    public class Program
     {
         private static void AddEmlpoyee(IRepository<Employee> employeeRepository)
         {
             //employeeRepository.Key = 1;
-            employeeRepository.Add(new Employee { FirstName = "Robert" });
-            employeeRepository.Add(new Employee { FirstName = "Staszek" });
-            employeeRepository.Add(new Employee { FirstName = "Tomek" });
-            employeeRepository.Save();
+            var employees = new[]
+            {
+                 new Employee { FirstName = "Robert" },
+                new Employee { FirstName = "Staszek" },
+                new Employee { FirstName = "Tomek" }
+            };
+            //metoda rozszerzalna
+            employeeRepository.AddBatch(employees);
+            //RepositoryExtensions.AddBatch(employeeRepository, employees);
         }
 
         private static void AddManagers(IWriteRepository<Manager> managerRepository)
         {
-            managerRepository.Add(new Manager { FirstName = "Krzysztof" });
+            var item = new Manager { FirstName = "Krzysztof" };
+            var itemCopy = item.Copy();
+            managerRepository.Add(item);
+
+            if (itemCopy != null)
+            {
+                itemCopy.FirstName += " _copy";
+                managerRepository.Add(itemCopy);
+            }
+            managerRepository.Add(item);
+
             managerRepository.Add(new Manager { FirstName = "Kazik" });
             managerRepository.Save();
         }
 
         private static void AddOrganization(IRepository<Organization> orgRepository)
         {
+            var organizations = new[]
+            {
+                 new Organization { Name = "RobertCompany" },
+                 new Organization { Name = "StaszekCompany" },
+            };
+            RepositoryExtensions.AddBatch(orgRepository, organizations);
             //orgRepositor.Key = new Guid();
-            orgRepository.Add(new Organization { Name = "RobertCompany" });
-            orgRepository.Add(new Organization { Name = "StaszekCompany" });
-            orgRepository.Save();
         }
 
         private static void GetEmployeeById(IRepository<Employee> employeeRepository)
