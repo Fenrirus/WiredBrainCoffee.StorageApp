@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WiredBrainCoffee.StorageApp.Entities;
@@ -10,10 +11,12 @@ namespace WiredBrainCoffee.StorageApp.Repositories
     {
         private readonly DbContext _dbContext;
         private readonly DbSet<T> _dbSet;
+        private readonly Action<T>? _itemAddedCallBack;
 
-        public SqlRepository(DbContext dbContext)
+        public SqlRepository(DbContext dbContext, Action<T>? itemAddedCallBack = null)
         {
             _dbContext = dbContext;
+            _itemAddedCallBack = itemAddedCallBack;
             _dbSet = _dbContext.Set<T>();
         }
 
@@ -22,6 +25,7 @@ namespace WiredBrainCoffee.StorageApp.Repositories
         public void Add(T item)
         {
             _dbSet.Add(item);
+            _itemAddedCallBack?.Invoke(item);
         }
 
         //public T CreateItem()
